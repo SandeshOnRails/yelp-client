@@ -8,9 +8,14 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var businesses: [Business]!
+    
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,15 +23,23 @@ class BusinessesViewController: UIViewController {
         Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
             
                 self.businesses = businesses
+                self.tableView.reloadData()
                 if let businesses = businesses {
                     for business in businesses {
-                        print(business.name!)
-                        print(business.address!)
+                        print("Business:" + business.name!)
+                        print("address: " + business.address!)
                     }
                 }
             
             }
         )
+        
+        tableView.delegate = self
+        
+        tableView.dataSource = self
+        
+        tableView.rowHeight = 150
+        
         
         /* Example of Yelp search with more search options specified
          Business.searchWithTerm(term: "Restaurants", sort: .distance, categories: ["asianfusion", "burgers"]) { (businesses, error) in
@@ -43,6 +56,31 @@ class BusinessesViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+       let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
+    
+       cell.business = businesses[indexPath.row]
+        
+        
+        return cell;
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+
+            
+        if businesses != nil {
+            return businesses.count
+        }
+        
+        else {
+            return 0
+        }
+        
+        
     }
     
     /*
